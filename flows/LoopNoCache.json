@@ -1,0 +1,211 @@
+{
+	"schemaVersion": "4",
+	"info": {
+		"name": "Loop no cache",
+		"description": "Gets collection and loop over it to get additional details",
+		"author": "support@axway.com",
+		"license": "ISC"
+	},
+	"parameter": {
+		"properties": {
+			"params": {
+				"type": "object",
+				"description": "The parameters from the endpoint.",
+				"properties": {},
+				"additionalProperties": false,
+				"required": []
+			},
+			"request": {
+				"type": "object",
+				"description": "The HTTP request."
+			},
+			"config": {
+				"type": "object",
+				"description": "The service's configuration"
+			},
+			"env": {
+				"type": "object",
+				"description": "The host OS environment"
+			}
+		},
+		"additionalProperties": false,
+		"required": [
+			"params",
+			"request",
+			"config",
+			"env"
+		]
+	},
+	"start": "setcontext.1",
+	"nodes": {
+		"response.success": {
+			"type": "nodehandler://axway-flow/http",
+			"name": "Success (HTTP 200)",
+			"method": "setresponse",
+			"parameters": [
+				{
+					"name": "status",
+					"value": "200",
+					"type": "number",
+					"metaName": "status",
+					"metaDescription": "The HTTP status code"
+				},
+				{
+					"name": "body",
+					"type": "jsonpath",
+					"value": "$.result.body",
+					"metaName": "body",
+					"metaDescription": "The response payload"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.response",
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set HTTP Response"
+		},
+		"response.error": {
+			"type": "nodehandler://axway-flow/http",
+			"name": "Bad Request (HTTP 400)",
+			"method": "setresponse",
+			"parameters": [
+				{
+					"name": "status",
+					"value": "400",
+					"type": "number",
+					"metaName": "status",
+					"metaDescription": "The HTTP status code"
+				},
+				{
+					"name": "body",
+					"type": "jsonpath",
+					"value": "$.error",
+					"metaName": "body",
+					"metaDescription": "The response payload"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.response",
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set HTTP Response"
+		},
+		"httploop.1": {
+			"type": "nodehandler://api-builder-plugin-httploop/httploop",
+			"name": "Request",
+			"method": "request",
+			"parameters": [
+				{
+					"name": "urlValues",
+					"type": "jsonpath",
+					"value": "$.urlValues",
+					"metaName": "URL Values",
+					"metaDescription": "Values for the URL parameters."
+				},
+				{
+					"name": "url",
+					"type": "string",
+					"value": "\"https://jsonplaceholder.typicode.com/{modelType}\"",
+					"metaName": "URL",
+					"metaDescription": "The target parametrized URL."
+				},
+				{
+					"name": "headers",
+					"type": "object",
+					"value": "{\n \"Authorization\": \"Bearer {apiKey}\"\n}",
+					"metaName": "Headers",
+					"metaDescription": "The http headers to set."
+				}
+			],
+			"outputs": {
+				"next": {
+					"routes": [
+						"httploop.2"
+					],
+					"context": "$.result",
+					"metaName": "Next"
+				},
+				"error": {
+					"routes": [
+						"response.error"
+					],
+					"context": "$.error",
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "Request",
+			"authorizations": [
+				{
+					"name": "apiKey",
+					"type": "credential",
+					"value": "demo-token"
+				}
+			]
+		},
+		"httploop.2": {
+			"type": "nodehandler://api-builder-plugin-httploop/httploop",
+			"name": "Loop",
+			"method": "loop",
+			"parameters": [
+				{
+					"name": "loopOver",
+					"type": "jsonpath",
+					"value": "$.result.body",
+					"metaName": "Loop Over",
+					"metaDescription": "The collection to loop over."
+				},
+				{
+					"name": "url",
+					"type": "string",
+					"value": "\"https://jsonplaceholder.typicode.com/users/{id}\"",
+					"metaName": "URL",
+					"metaDescription": "The target parametrized URL."
+				}
+			],
+			"outputs": {
+				"next": {
+					"routes": [
+						"response.success"
+					],
+					"context": "$.details",
+					"metaName": "Next"
+				},
+				"error": {
+					"routes": [
+						"response.error"
+					],
+					"context": "$.error",
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "Loop"
+		},
+		"setcontext.1": {
+			"type": "nodehandler://axway-flow/setcontext",
+			"name": "Set Model Type",
+			"method": "setcontext",
+			"parameters": [
+				{
+					"name": "value",
+					"type": "string",
+					"value": "\"users\"",
+					"metaName": "value"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.urlValues",
+					"routes": [
+						"httploop.1"
+					],
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set Context"
+		}
+	}
+}

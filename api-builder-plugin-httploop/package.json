@@ -1,0 +1,31 @@
+{
+	"name": "api-builder-plugin-httploop",
+	"version": "1.0.0",
+	"description": "Makes HTTP requests",
+	"author": "Community",
+	"license": "Apache-2.0",
+	"keywords": [
+		"amplify",
+		"api-builder"
+	],
+	"engines": {
+		"node": ">= 12.15"
+	},
+	"main": "src/index.js",
+	"files": [
+		"src",
+		"README.md"
+	],
+	"dependencies": {
+		"@axway/api-builder-sdk": "0.4.0",
+		"@axway/requester": "^4.0.5"
+	},
+	"peerDependencies": {
+		"@axway/api-builder-runtime": "^4.22.0"
+	},
+	"devDependencies": {
+		"chai": "^4.1.2",
+		"mocha": "^7.1.1"
+	},
+	"scripts": {}
+}

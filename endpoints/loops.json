@@ -1,0 +1,67 @@
+{
+	"x-enabled": {
+		"enabled": true
+	},
+	"swagger": "2.0",
+	"info": {
+		"description": "Demonstrate various loops",
+		"version": "1.0.0",
+		"title": "Loops"
+	},
+	"paths": {
+		"/loop-no-cache": {
+			"get": {
+				"x-flow": "LoopNoCache",
+				"description": "",
+				"operationId": "LoopNoCache",
+				"parameters": [],
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "greeting",
+						"schema": {
+							"$ref": "schema:///schema/testredis/greeting"
+						}
+					},
+					"400": {
+						"description": "bad request",
+						"schema": {
+							"$ref": "schema:///schema/testredis/error"
+						}
+					}
+				},
+				"summary": "Loop over collection to get details - no cache",
+				"tags": []
+			}
+    },
+		"/loop-js": {
+			"get": {
+				"x-flow": "LoopJS",
+				"description": "",
+				"operationId": "InMemoryLoop",
+				"parameters": [],
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "greeting",
+						"schema": {
+							"$ref": "schema:///schema/testredis/greeting"
+						}
+					},
+					"400": {
+						"description": "bad request",
+						"schema": {
+							"$ref": "schema:///schema/testredis/error"
+						}
+					}
+				},
+				"summary": "Loop over preloaded data with JavaScript flow-node",
+				"tags": []
+			}
+		} 
+	}
+}

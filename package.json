@@ -1,0 +1,36 @@
+{
+	"name": "testredis",
+	"description": "An API Builder service",
+	"main": "app.js",
+	"version": "1.0.0",
+	"license": "",
+	"keywords": [
+		"api-builder",
+		"micro-service",
+		"middleware",
+		"orm",
+		"service"
+	],
+	"engines": {
+		"node": ">=12.15"
+	},
+	"repository": {},
+	"private": true,
+	"dependencies": {
+		"@axway-api-builder-ext/api-builder-plugin-fn-redis": "0.0.3",
+		"@axway/api-builder-plugin-fn-base64": "^2.0.0",
+		"@axway/api-builder-plugin-fn-javascript": "^1.0.0",
+		"@axway/api-builder-plugin-fn-json": "^2.0.0",
+		"@axway/api-builder-plugin-fn-mustache": "^1.0.1",
+		"@axway/api-builder-plugin-fn-restclient": "^2.0.0",
+		"@axway/api-builder-plugin-fn-swagger": "latest",
+		"@axway/api-builder-runtime": "marrakech",
+		"api-builder-plugin-httploop": "file:api-builder-plugin-httploop"
+	},
+	"devDependencies": {
+		"@axway/api-builder-admin": "^1.10.10"
+	},
+	"scripts": {
+		"start": "node ."
+	}
+}

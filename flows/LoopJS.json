@@ -1,0 +1,159 @@
+{
+	"schemaVersion": "4",
+	"info": {
+		"name": "Loop with JavaScript flow-node",
+		"description": "Loops over preloaded data",
+		"author": "support@axway.com",
+		"license": "ISC"
+	},
+	"parameter": {
+		"properties": {
+			"params": {
+				"type": "object",
+				"description": "The parameters from the endpoint.",
+				"properties": {},
+				"additionalProperties": false,
+				"required": []
+			},
+			"request": {
+				"type": "object",
+				"description": "The HTTP request."
+			},
+			"config": {
+				"type": "object",
+				"description": "The service's configuration"
+			},
+			"env": {
+				"type": "object",
+				"description": "The host OS environment"
+			}
+		},
+		"additionalProperties": false,
+		"required": [
+			"params",
+			"request",
+			"config",
+			"env"
+		]
+	},
+	"start": "setcontext.1",
+	"nodes": {
+		"response.success": {
+			"type": "nodehandler://axway-flow/http",
+			"name": "Success (HTTP 200)",
+			"method": "setresponse",
+			"parameters": [
+				{
+					"name": "status",
+					"value": "200",
+					"type": "number",
+					"metaName": "status",
+					"metaDescription": "The HTTP status code"
+				},
+				{
+					"name": "body",
+					"type": "jsonpath",
+					"value": "$.result",
+					"metaName": "body",
+					"metaDescription": "The response payload"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.response",
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set HTTP Response"
+		},
+		"response.error": {
+			"type": "nodehandler://axway-flow/http",
+			"name": "Bad Request (HTTP 400)",
+			"method": "setresponse",
+			"parameters": [
+				{
+					"name": "status",
+					"value": "400",
+					"type": "number",
+					"metaName": "status",
+					"metaDescription": "The HTTP status code"
+				},
+				{
+					"name": "body",
+					"type": "jsonpath",
+					"value": "$.error",
+					"metaName": "body",
+					"metaDescription": "The response payload"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.response",
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set HTTP Response"
+		},
+		"javascript.1": {
+			"type": "nodehandler://@axway/api-builder-plugin-fn-javascript/javascript",
+			"name": "For Each User",
+			"method": "Execute",
+			"parameters": [
+				{
+					"name": "code",
+					"type": "string",
+					"value": "\"return data.map(item => item.concat('_processed'));\"",
+					"metaName": "code",
+					"metaDescription": "A JavaScript function body. Supports `await` and returning promises"
+				},
+				{
+					"name": "data",
+					"type": "jsonpath",
+					"value": "$.users",
+					"metaName": "data",
+					"metaDescription": "The value to apply as the `data` argument to the JavaScript code. For objects and arrays, `data` is passed by reference."
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.result",
+					"routes": [
+						"response.success"
+					],
+					"metaName": "Next"
+				},
+				"error": {
+					"context": "$.error",
+					"routes": [
+						"response.error"
+					],
+					"metaName": "Error"
+				}
+			},
+			"metaMethod": "Execute"
+		},
+		"setcontext.1": {
+			"type": "nodehandler://axway-flow/setcontext",
+			"name": "Define Users",
+			"method": "setcontext",
+			"parameters": [
+				{
+					"name": "value",
+					"type": "array",
+					"value": "[\"user1\", \"user2\"]",
+					"metaName": "value"
+				}
+			],
+			"outputs": {
+				"next": {
+					"context": "$.users",
+					"routes": [
+						"javascript.1"
+					],
+					"metaName": "Next"
+				}
+			},
+			"metaMethod": "Set Context"
+		}
+	}
+}

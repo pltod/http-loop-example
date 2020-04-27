@@ -1,0 +1,140 @@
+flow-nodes:
+  httploop:
+    name: HTTP Loop
+    icon: icon.svg
+    description: Example flow-node to say hello.
+    category: connector
+    methods:
+      request: # This same key is used in `actions.js`
+        name: Request
+        description: Generates a greeting.
+        authorizations:
+          apiKey:
+            description: API key to be set as authentication header.
+            required: false
+            initialType: string
+            schema:
+              title: API Key
+              type: string
+        parameters:
+          url:
+            description: The target parametrized URL.
+            required: true
+            initialType: string
+            schema:
+              title: URL
+              type: string
+          urlValues:
+            description: Values for the URL parameters.
+            required: false
+            initialType: string
+            schema:
+              title: URL Values
+              oneOf:
+                - type: array
+                  items:
+                    type: string
+                - type: object
+                - type: string
+          method:
+            description: The http method. GET by default.
+            required: false
+            initialType: string
+            schema:
+              title: Method
+              type: string
+              enum: ["GET", "POST"]
+          body:
+            description: The request body. Relevant only for POST.
+            required: false
+            initialType: object
+            schema:
+              title: Body
+              type: object
+          headers:
+            description: The http headers to set.
+            required: false
+            initialType: object
+            schema:
+              title: Headers
+              type: object                    
+        outputs:
+          # success output(s) should be first
+          next:
+            name: Next
+            context: $.hello
+            schema:
+              type: string
+          # error output(s) should be last
+          error:
+            name: Error
+            context: $.error
+            schema:
+              type: string 
+      loop: # This same key is used in `actions.js`
+        name: Loop
+        description: Generates a greeting.
+        authorizations:
+          apiKey:
+            description: API key to be set as authentication header.
+            required: false
+            initialType: string
+            schema:
+              title: API Key
+              type: string        
+        parameters:
+          url:
+            description: The target parametrized URL.
+            required: true
+            initialType: string
+            schema:
+              title: URL
+              type: string
+          loopOver:
+            description: The collection to loop over.
+            required: true
+            initialType: array
+            schema:
+              title: Loop Over
+              oneOf:
+                - type: array
+                  items:
+                    type: string
+                - type: array
+                  items:
+                    type: object             
+          method:
+            description: The http method. GET by default.
+            required: false
+            initialType: string
+            schema:
+              title: Method
+              type: string
+              enum: ["GET", "POST"]
+          body:
+            description: The request body. Relevant only for POST.
+            required: false
+            initialType: object
+            schema:
+              title: Body
+              type: object
+          headers:
+            description: The http headers to set.
+            required: false
+            initialType: object
+            schema:
+              title: Headers
+              type: object                                          
+        outputs:
+          # success output(s) should be first
+          next:
+            name: Next
+            context: $.hello
+            schema:
+              type: string
+          # error output(s) should be last
+          error:
+            name: Error
+            context: $.error
+            schema:
+              type: string
