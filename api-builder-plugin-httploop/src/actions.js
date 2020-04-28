@@ -7,13 +7,15 @@ async function request(req, outputs, { logger }) {
 	const apiKey = req.authorizations && req.authorizations.apiKey;
 	const hdrs = fillAPIKey(headers, apiKey);
 	let location = url;
-	if (typeof urlValues === 'string') {
-		location = constructUrlFromString(url, urlValues, logger);
-	} else if (Array.isArray(urlValues)) {
-		location = constructUrlFromArray(url, urlValues, logger);
-	} else {
-		// urlValues are defined in Object
-		location = constructUrlFromObject(url, urlValues, logger);
+	if (urlValues) {
+		if (typeof urlValues === 'string') {
+			location = constructUrlFromString(url, urlValues, logger);
+		} else if (Array.isArray(urlValues)) {
+			location = constructUrlFromArray(url, urlValues, logger);
+		} else {
+			// urlValues are defined in Object
+			location = constructUrlFromObject(url, urlValues, logger);
+		}
 	}
 	let results;
 	try {
@@ -31,7 +33,7 @@ async function loop(req, outputs, { logger, pluginConfig }) {
 	const { concurrencyRequests } = pluginConfig;
 	const hdrs = fillAPIKey(headers, apiKey);
 
-	if (data.length === 0) {
+	if (!Array.isArray(data) || !(data.length > 0)) {
 		logger.trace('Loop requested on empty data!');
 		return outputs.next(null, []);
 	} else {
@@ -55,7 +57,7 @@ async function loop(req, outputs, { logger, pluginConfig }) {
 			}
 		} else {
 			const requests = data.map((entry) => {
-				return execute(entry, url, hdrs, urlType, action, body, logger);
+				return execute(entry, url, urlType, hdrs, action, body, logger);
 			});
 			results = await Promise.all(requests);
 		}
@@ -63,7 +65,7 @@ async function loop(req, outputs, { logger, pluginConfig }) {
 	}
 }
 
-async function execute(entry, url,urlType, hdrs, method, body, logger){
+async function execute(entry, url, urlType, hdrs, method, body, logger){
 	let location;
 	if (urlType === 'multipleParameters') {
 		location = constructUrlFromObject(url, entry, logger);
@@ -87,7 +89,7 @@ function getUrlType(data, outputs, logger) {
 }
 
 // Relevant for URLs with multiple parameters
-function constructUrlFromObject(url, obj) {
+function constructUrlFromObject(url, obj, logger) {
 	let location = url;
 	const properties = getPametrizedProperties(url);
 	if (properties.length === 0) {

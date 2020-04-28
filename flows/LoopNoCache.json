@@ -36,7 +36,7 @@
 			"env"
 		]
 	},
-	"start": "setcontext.1",
+	"start": "httploop.1",
 	"nodes": {
 		"response.success": {
 			"type": "nodehandler://axway-flow/http",
@@ -100,25 +100,18 @@
 			"method": "request",
 			"parameters": [
 				{
-					"name": "urlValues",
-					"type": "jsonpath",
-					"value": "$.urlValues",
-					"metaName": "URL Values",
-					"metaDescription": "Values for the URL parameters."
-				},
-				{
-					"name": "url",
-					"type": "string",
-					"value": "\"https://jsonplaceholder.typicode.com/{modelType}\"",
-					"metaName": "URL",
-					"metaDescription": "The target parametrized URL."
-				},
-				{
 					"name": "headers",
 					"type": "object",
 					"value": "{\n \"Authorization\": \"Bearer {apiKey}\"\n}",
 					"metaName": "Headers",
 					"metaDescription": "The http headers to set."
+				},
+				{
+					"name": "url",
+					"type": "string",
+					"value": "\"https://jsonplaceholder.typicode.com/users\"",
+					"metaName": "URL",
+					"metaDescription": "The target parametrized URL."
 				}
 			],
 			"outputs": {
@@ -183,29 +176,6 @@
 				}
 			},
 			"metaMethod": "Loop"
-		},
-		"setcontext.1": {
-			"type": "nodehandler://axway-flow/setcontext",
-			"name": "Set Model Type",
-			"method": "setcontext",
-			"parameters": [
-				{
-					"name": "value",
-					"type": "string",
-					"value": "\"users\"",
-					"metaName": "value"
-				}
-			],
-			"outputs": {
-				"next": {
-					"context": "$.urlValues",
-					"routes": [
-						"httploop.1"
-					],
-					"metaName": "Next"
-				}
-			},
-			"metaMethod": "Set Context"
 		}
 	}
 }
